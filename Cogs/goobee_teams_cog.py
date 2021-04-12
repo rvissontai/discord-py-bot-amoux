@@ -23,6 +23,21 @@ class goobee_teams(commands.Cog):
     async def daily(self, ctx):
         await self.service.realizar_daily(ctx)
 
+    @commands.command(pass_context=True)
+    async def times(self, ctx):
+        print('time')
+        # comando = params['c']
+        # response = await comandos_internos[comando](ctx)
+
+        # if(response.status_code == 200):
+        #     await ctx.send(response.text)
+        # else:
+        #     await ctx.send('Erro listar times')
+
+    async def comando_times(self, message):
+        args = message.split()
+        print('executanto comando times')
+
     async def get_times(self, ctx):
         pass
         # user = Usuarios.get(Usuarios.idDiscord == ctx.author.id)

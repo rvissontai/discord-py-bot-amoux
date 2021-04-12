@@ -34,17 +34,17 @@ class goobe_teams_service():
                 humorResponse = requests.post(self.url_humor, json=param, headers=header)
 
                 if(humorResponse.status_code == 200):
-                    await mensagem.edit(content = 'Seu humor foi alterado! :thumbsup:')
+                    await mensagem.edit(content = 'Seu humor foi alterado!')
                 else :
-                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui alterar o humor :(')
+                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui alterar o humor ):')
             else:
-                await mensagem.edit(content = 'Cara deu alguma coisa errada com sua autenticação :(')
+                await mensagem.edit(content = 'Cara deu alguma coisa errada com sua autenticação ):')
 
         except Usuarios.DoesNotExist:
             await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? é só separar por espaço... fica tranquilo que não sou X9.')     
 
     async def realizar_daily(self, ctx) :
-        mensagem = await ctx.send('Definindo daily, por favor aguarde...')
+        mensagem = await ctx.send('Definindo daily...')
 
         try:
             user = Usuarios.get(Usuarios.idDiscord == ctx.author.id)
@@ -63,15 +63,15 @@ class goobe_teams_service():
                 response = requests.post(self.url_daily, json=param, headers=header)
 
                 if(response.status_code == 200):
-                    await mensagem.edit(content = 'Daily definida como realizada! :thumbsup:')
+                    await mensagem.edit(content = 'Daily definida como realizada!')
                 else :
-                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily. :(')
+                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily. ):')
 
             else:
-                await ctx.author.send('Cara deu alguma coisa errada com sua autenticação :(')                
+                await ctx.author.send('Cara deu alguma coisa errada com sua autenticação ):')                
 
         except Usuarios.DoesNotExist:
             await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? é só separar por espaço... fica tranquilo que não sou X9.')     
         except Exception as e:
-            await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily :(')
+            await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily ):')
             print(e)

@@ -9,6 +9,9 @@ from database import iniciar_database
 from parses.coins_parser import coins_parser
 from settings import *
 
+from Services.goobee_teams_service import goobe_teams_service
+from database import Usuarios
+
 from Cogs.barrel import *
 
 bot = commands.Bot(command_prefix = ["?", "."])
@@ -27,7 +30,11 @@ async def on_ready():
     
 @bot.event
 async def on_message(message):
-    print(message)
+    print(str(message.author) + ' enviou uma mensagem')
+
+    if message.author.bot:
+        return
+
     # try:
     #     #Somente se for mensagem privada e digitou um comando interno.
     #     if message.channel.id == message.author.dm_channel.id and comando_interno_valido(message): 
@@ -35,46 +42,36 @@ async def on_message(message):
     #         await comandos_internos[comando](message)
     # except Exception as ex:
     #      print(ex)
+    private_message = message.author.dm_channel is not None and message.channel.id == message.author.dm_channel.id
 
-    # try:
-    #     if message.channel.id == message.author.dm_channel.id: 
-    #         credenciais = message.content.split()
+    if private_message: 
+        credenciais = message.content.split()
 
-    #         response = autenticar(credenciais[0], credenciais[1])
+        service = goobe_teams_service(bot)
 
-    #         if(response.status_code == 200):
-    #             try:
-    #                 user = Usuarios.get(Usuarios.idDiscord == message.author.id)
-    #                 Usuarios.update(login = credenciais[0], senha = credenciais[1]).where(Usuarios.idDiscord == message.author.id).returning(Usuarios)
-    #             except Usuarios.DoesNotExist:
-    #                 Usuarios.insert(idDiscord=message.author.id, login=credenciais[0], senha=credenciais[1]).execute()
+        response = await service.autenticar(credenciais[0], credenciais[1])
 
-    #             await message.channel.send('Beleza, consegui logar aqui, agora é só ir no chat geral e mudar seu humor.')
-    #         else:
-    #             await message.channel.send('Não foi possível autenticar, tem certeza que me passou as informações certas?')
-    # except:
-    #     print(message)
+        if(response.status_code == 200):
+            try:
+                user = Usuarios.get(Usuarios.idDiscord == message.author.id)
+                Usuarios.update(login = credenciais[0], senha = credenciais[1]).where(Usuarios.idDiscord == message.author.id).returning(Usuarios)
+            except Usuarios.DoesNotExist:
+                Usuarios.insert(idDiscord=message.author.id, login=credenciais[0], senha=credenciais[1]).execute()
 
-    await bot.process_commands(message)
+            await message.channel.send('Beleza, consegui logar aqui, agora é só ir no chat geral e mudar seu humor.')
+        else:
+            await message.channel.send('Não foi possível autenticar, tem certeza que me passou as informações certas?')
+    else:
+        await bot.process_commands(message)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        await ctx.send('Hummm, não conheço esse comando, na dúvida manda um .help pra ver os comandos')
 
 @bot.command()
 async def ping(ctx):
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
-
-@bot.command(pass_context=True)
-async def times(ctx):
-    print('time')
-    # comando = params['c']
-    # response = await comandos_internos[comando](ctx)
-
-    # if(response.status_code == 200):
-    #     await ctx.send(response.text)
-    # else:
-    #     await ctx.send('Erro listar times')
-
-async def comando_times(message):
-    args = message.split()
-    print('executanto comando times')
 
 # def comando_interno_valido(message):
 #     #o comando interno tem que ser sempre a primeir palavra

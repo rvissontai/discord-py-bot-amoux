@@ -13,7 +13,7 @@ class vitreo_telnet(commands.Cog):
         sucesso = await self.service.limpar_cache()
 
         if (sucesso):
-            await mensagem.edit(content = 'Cache homol foi limpo com sucesso. :thumbsup:')
+            await mensagem.edit(content = 'Cache homol foi limpo com sucesso!')
         else:
             await mensagem.edit(content = 'Não consegui limpar o cache, alguma coisa deu errado :(')
 
