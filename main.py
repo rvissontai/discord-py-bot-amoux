@@ -60,10 +60,11 @@ async def ping(ctx):
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
 
 def comando_interno_valido(message):
+    pass
     #o comando interno tem que ser sempre a primeir palavra
-    primeira_palavra = message.content.split()[0]
+    # primeira_palavra = message.content.split()[0]
 
-    return primeira_palavra in comandos_internos.keys()
+    # return primeira_palavra in comandos_internos.keys()
 
 # comandos_internos = {
 #     'coin': get_times,
