@@ -12,6 +12,8 @@ def iniciar_database():
 
         Frases.create_table()
 
+        LastestCleaning.create_table()
+
         print("Banco de dados está pronto.")
     except peewee.OperationalError:
         print("Não foi possível iniciar o banco!")

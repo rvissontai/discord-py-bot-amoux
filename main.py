@@ -6,13 +6,13 @@ import os
 
 from discord.ext import commands
 from database import iniciar_database
-from parses.coins_parser import coins_parser
 from settings import *
 
 from Services.goobee_teams_service import goobe_teams_service
 from database import Usuarios
 
 from Cogs.barrel import *
+from Services.dm_service import dm_service
 
 bot = commands.Bot(command_prefix = ["?", "."])
 
@@ -35,32 +35,18 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    # try:
-    #     #Somente se for mensagem privada e digitou um comando interno.
-    #     if message.channel.id == message.author.dm_channel.id and comando_interno_valido(message): 
-    #         comando = message.content.split()[0]
-    #         await comandos_internos[comando](message)
-    # except Exception as ex:
-    #      print(ex)
     private_message = message.author.dm_channel is not None and message.channel.id == message.author.dm_channel.id
 
     if private_message: 
-        credenciais = message.content.split()
+        # try:
+        #     #Somente se for mensagem privada e digitou um comando interno.
+        #     if comando_interno_valido(message): 
+        #         comando = message.content.split()[0]
+        #         await comandos_internos[comando](message)
+        #     except Exception as ex:
+        #         print(ex)
 
-        service = goobe_teams_service(bot)
-
-        response = await service.autenticar(credenciais[0], credenciais[1])
-
-        if(response.status_code == 200):
-            try:
-                user = Usuarios.get(Usuarios.idDiscord == message.author.id)
-                Usuarios.update(login = credenciais[0], senha = credenciais[1]).where(Usuarios.idDiscord == message.author.id).returning(Usuarios)
-            except Usuarios.DoesNotExist:
-                Usuarios.insert(idDiscord=message.author.id, login=credenciais[0], senha=credenciais[1]).execute()
-
-            await message.channel.send('Beleza, consegui logar aqui, agora é só ir no chat geral e mudar seu humor.')
-        else:
-            await message.channel.send('Não foi possível autenticar, tem certeza que me passou as informações certas?')
+        await dm_service(bot).handle_private_message(message)
     else:
         await bot.process_commands(message)
 
@@ -73,14 +59,16 @@ async def on_command_error(ctx, error):
 async def ping(ctx):
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
 
-# def comando_interno_valido(message):
-#     #o comando interno tem que ser sempre a primeir palavra
-#     primeira_palavra = message.content.split()[0]
+def comando_interno_valido(message):
+    pass
+    #o comando interno tem que ser sempre a primeir palavra
+    # primeira_palavra = message.content.split()[0]
 
-#     return primeira_palavra in comandos_internos.keys()
+    # return primeira_palavra in comandos_internos.keys()
 
 # comandos_internos = {
-#     'list': get_times
+#     'coin': get_times,
+#     'goobe':
 # }
 
 bot.run(os.getenv('DISCORD-TOKEN'))

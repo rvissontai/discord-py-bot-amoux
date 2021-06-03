@@ -1,4 +1,7 @@
 from telnetlib import Telnet
+from datetime import datetime
+from database import LastestCleaning
+
 import os
 class vitreo_telnet_service():
     def __init__(self, bot):
@@ -9,13 +12,11 @@ class vitreo_telnet_service():
 
     async def limpar_cache(self):
         try:        
-            print(self.host)
-            print(self.port)
-            print(self.timeout)
-
             with Telnet(self.host, self.port, self.timeout) as session:
                 session.write(b"flush_all\n")
                 session.write(b"quit\n")
+
+            #LastestCleaning.insert(data=datetime.now()).execute()
 
             return True
         except Exception as e:

@@ -15,7 +15,7 @@ class vitreo_telnet(commands.Cog):
         if (sucesso):
             await mensagem.edit(content = 'Cache homol foi limpo com sucesso!')
         else:
-            await mensagem.edit(content = 'Não consegui limpar o cache, alguma coisa deu errado :(')
+            await mensagem.edit(content = 'Não consegui limpar o cache, alguma coisa deu errado ):')
 
 def setup(bot):
     bot.add_cog(vitreo_telnet(bot))
