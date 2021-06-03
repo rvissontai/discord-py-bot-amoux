@@ -32,5 +32,7 @@ Em seguida, utilize o gerenciador de pacotes [pip](https://pip.pypa.io/en/stable
 pip install -r requirements.txt
 ```
 
+É necessário fazer o download do chromewebdriver.exe e adicionar na raíz do projeto.
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
