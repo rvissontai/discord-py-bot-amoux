@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import pprint
+from Common.Enum.enum_humor_response import humor_response
 
 class goobe_teams_service():
     def __init__(self, bot):
@@ -18,11 +19,9 @@ class goobe_teams_service():
     async def autenticar(self, user, senha):
         return requests.post(self.url_auth, data=None, json={'usuario': user, 'senha': senha })
 
-    async def add_humor(self, ctx, id_sentimento):
-        mensagem = await ctx.send('Definindo humor...')
-        
+    async def add_humor(self, idDiscord, id_sentimento):
         try:
-            user = Usuarios.get(Usuarios.idDiscord == ctx.author.id)
+            user = Usuarios.get(Usuarios.idDiscord == idDiscord)
             response = await self.autenticar(user.login, user.senha)
             
             if(response.status_code == 200):
@@ -38,15 +37,17 @@ class goobe_teams_service():
                 humorResponse = requests.post(self.url_humor, json=param, headers=header)
 
                 if(humorResponse.status_code == 200):
-                    await mensagem.edit(content = 'Seu humor foi alterado!')
-                else :
-                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui alterar o humor ):')
+                    return humor_response.sucesso
+
+                return humor_response.erro_alterar_humor
             else:
-                await mensagem.edit(content = 'Cara deu alguma coisa errada com sua autenticação ):')
+                return humor_response.erro_autenticacao
 
         except Usuarios.DoesNotExist:
-            await mensagem.edit(content = 'Você ainda não me informou suas credenciais, enviei uma mensagem privada pra você, é só seguir as instruções por lá.')
-            await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? fica tranquilo que não sou X9. \n ex: -s goobe -l eu@email.com -p senha123')     
+            return humor_response.erro_usuario_nao_existe
+
+        except Exception as e:
+            print(e)
 
     async def realizar_daily(self, ctx) :
         mensagem = await ctx.send('Definindo daily...')
