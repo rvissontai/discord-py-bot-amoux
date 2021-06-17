@@ -3,6 +3,7 @@ from discord.ext import commands
 from Services.goobee_teams_service import goobe_teams_service
 from Common.Enum.enum_sentimento import sentimento
 from Common.Enum.enum_humor_response import humor_response
+from Common.Enum.enum_daily_response import daily_response
 
 class goobee_teams(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +24,31 @@ class goobee_teams(commands.Cog):
 
     @commands.command(pass_context=True, aliases=['d'])
     async def daily(self, ctx):
-        await self.service.realizar_daily(ctx)
+        #Enviar uma mensagem para informar o usuário que o humor está sendo modificado.
+        mensagem = await ctx.send('Definindo daily...')
+
+        #Modificar daily como realizada
+        response = await self.service.realizar_daily(ctx.author.id)
+
+        #Definir a mensagem a ser exibida com base no response
+        if(response == daily_response.sucesso):
+            await mensagem.edit(content = 'Daily definida como realizada!')
+            return
+        
+        if (response == daily_response.erro_realizar_daily):
+            await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily. ):')
+            return
+        
+        if (response == daily_response.erro_autenticacao):
+            await mensagem.edit(content = 'Cara deu alguma coisa errada com sua autenticação ):')
+            return
+
+        if (response == daily_response.erro_usuario_nao_existe):
+            await mensagem.edit(content = 'Você ainda não me informou suas credenciais, enviei uma mensagem privada pra você, é só seguir as instruções por lá.')
+            await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? fica tranquilo que não sou X9. \n ex: -s goobe -l eu@email.com -p senha123')     
+            return
+
+
 
     async def add_humor(self, ctx, id_sentimento):
         #Enviar uma mensagem para informar o usuário que o humor está sendo modificado.

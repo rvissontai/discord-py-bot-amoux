@@ -8,6 +8,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import pprint
 from Common.Enum.enum_humor_response import humor_response
+from Common.Enum.enum_daily_response import daily_response
 
 class goobe_teams_service():
     def __init__(self, bot):
@@ -49,11 +50,9 @@ class goobe_teams_service():
         except Exception as e:
             print(e)
 
-    async def realizar_daily(self, ctx) :
-        mensagem = await ctx.send('Definindo daily...')
-
+    async def realizar_daily(self, idDiscord) :
         try:
-            user = Usuarios.get(Usuarios.idDiscord == ctx.author.id)
+            user = Usuarios.get(Usuarios.idDiscord == idDiscord)
             response = await self.autenticar(user.login, user.senha)
             
             if(response.status_code == 200):
@@ -70,17 +69,16 @@ class goobe_teams_service():
                 response = requests.post(self.url_daily, json=param, headers=header)
 
                 if(response.status_code == 200):
-                    await mensagem.edit(content = 'Daily definida como realizada!')
-                else :
-                    await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily. ):')
+                    return daily_response.sucesso
 
+                return daily_response.erro_realizar_daily
             else:
-                await ctx.author.send('Cara deu alguma coisa errada com sua autenticação ):')                
+                return daily_response.erro_autenticacao
 
         except Usuarios.DoesNotExist:
-            await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? fica tranquilo que não sou X9. \n ex: -s goobe -l eu@email.com -p senha123')     
+            return daily_response.erro_usuario_nao_existe
         except Exception as e:
-            await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui realizar a daily ):')
+            return daily_response.erro_realizar_daily
             print(e)
 
     async def encriptar_autenticacao(self, user, password):
@@ -123,7 +121,6 @@ class goobe_teams_service():
         except Exception as ex:
             print(ex)
 
-        
 
     async def process_browser_logs_for_network_events(self, logs):
         result = {}
