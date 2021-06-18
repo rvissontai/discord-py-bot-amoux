@@ -1,20 +1,28 @@
 import requests
 import json
+
 from database import Usuarios
+from database import HumorDiario
+
 from datetime import timezone, datetime
+
 import os
+
 from selenium import webdriver
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import pprint
+
 from Common.Enum.enum_humor_response import humor_response
 from Common.Enum.enum_daily_response import daily_response
+from Services.request.informar_humor_request import informar_humor_request
 
 class goobe_teams_service():
     def __init__(self, bot):
         self.bot = bot
         self.url_auth = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-AUTH')
         self.url_humor = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-HUMOR')
+        self.url_editar_humor = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-EDITAR-HUMOR')
         self.url_daily = os.getenv('GOOBEE-URL') + os.getenv('GOOBEE-ENDPOINT-DAILY')
 
     async def autenticar(self, user, senha):
@@ -25,10 +33,16 @@ class goobe_teams_service():
             user = Usuarios.get(Usuarios.idDiscord == idDiscord)
             response = await self.autenticar(user.login, user.senha)
             
-            if(response.status_code == 200):
-                sucesso_response = json.loads(response.text)
+            if(response.status_code != 200):
+                return humor_response.erro_autenticacao
+            
+            sucesso_response = json.loads(response.text)
 
-                header = { 'Authorization': 'Bearer ' + sucesso_response["token"] }
+            header = { 'Authorization': 'Bearer ' + sucesso_response["token"] }
+
+            sentimento_diario_response = await self.obter_sentimento_diario(sucesso_response["token"], sucesso_response["idPessoa"])
+
+            if sentimento_diario_response is None:
                 param = {
                     'idPessoa': sucesso_response["idPessoa"],
                     'idResponsavelCriacao': sucesso_response["id"],
@@ -36,19 +50,41 @@ class goobe_teams_service():
                 }
 
                 humorResponse = requests.post(self.url_humor, json=param, headers=header)
-
-                if(humorResponse.status_code == 200):
-                    return humor_response.sucesso
-
-                return humor_response.erro_alterar_humor
             else:
-                return humor_response.erro_autenticacao
+                param = {
+                    'idSentimentoPessoa': sentimento_diario_response,
+                    'idResponsavelCriacao': sucesso_response["id"],
+                    'sentimento': id_sentimento
+                }
 
+                humorResponse = requests.put(self.url_editar_humor + sentimento_diario_response, json=param, headers=header)
+
+            if(humorResponse.status_code != 200):
+                return humor_response.erro_alterar_humor
+                
+            return humor_response.sucesso
         except Usuarios.DoesNotExist:
             return humor_response.erro_usuario_nao_existe
 
         except Exception as e:
             print(e)
+
+    async def obter_sentimento_diario(self, token, id_pessoa):
+        response = requests.get(
+            os.getenv('GOOBEE-URL') + '/api/Home/InformaHumor', 
+            params={'idPessoa': id_pessoa },
+            headers= { 'Authorization': 'Bearer ' + token })
+
+        if response.status_code != 200:
+            return None
+
+        model = json.loads(response.text)
+
+        if model["idSentimentoPessoa"] is None:
+            return None
+
+        return model["idSentimentoPessoa"]
+
 
     async def realizar_daily(self, idDiscord) :
         try:
@@ -121,7 +157,6 @@ class goobe_teams_service():
         except Exception as ex:
             print(ex)
 
-
     async def process_browser_logs_for_network_events(self, logs):
         result = {}
         for entry in logs:
@@ -167,4 +202,20 @@ class goobe_teams_service():
             #                     result.append('user: ' + jsonUser["usuario"])
             #                     result.append('senha: ' + jsonUser["senha"])
         
-        
+    async def verificar_humor_diario(self):
+        try:
+            notificar_usuarios = []
+            users = Usuarios.get()
+            humores = HumorDiario.get()
+
+            for user in users:
+                humor_usuario = HumorDiario.get(HumorDiario.idDiscord == user.idDiscord and HumorDiario.data == datetime.date.today())
+
+                if humor_response is None:
+                    notificar_usuarios.append(user)
+            
+            return notificar_usuarios
+
+        except Exception as e:
+            print(e)        
+            return None
