@@ -10,17 +10,25 @@ class goobee_teams(commands.Cog):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
 
+    @commands.command(pass_context=True, aliases=['ta'])
+    async def testeaviso(self, ctx):
+        mensagem = await ctx.send('Obtendo usuários que ainda não informaram humor...')
+
+        usuarios = await self.service.obter_sentimento_diario()
+
+        
+
     @commands.command(pass_context=True, aliases=['f'])
     async def feliz(self, ctx):
-        await self.add_humor(ctx, sentimento.feliz.value)
+        pass#await self.add_humor(ctx, sentimento.feliz.value)
 
     @commands.command(pass_context=True, aliases=['n'] )
     async def neutro(self, ctx):
-        await self.add_humor(ctx, sentimento.neutro.value)
+        pass#await self.add_humor(ctx, sentimento.neutro.value)
 
     @commands.command(pass_context=True, aliases=['i'])
     async def irritado(self, ctx):
-        await self.add_humor(ctx, sentimento.irritado.value)
+        pass#await self.add_humor(ctx, sentimento.irritado.value)
 
     @commands.command(pass_context=True, aliases=['d'])
     async def daily(self, ctx):
