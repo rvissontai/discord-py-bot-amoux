@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from Services.goobee_teams_service import goobe_teams_service
 from Common.Enum.enum_sentimento import sentimento
 from Common.Enum.enum_humor_response import humor_response
@@ -9,26 +9,30 @@ class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
+        
 
     @commands.command(pass_context=True, aliases=['ta'])
     async def testeaviso(self, ctx):
         mensagem = await ctx.send('Obtendo usuários que ainda não informaram humor...')
 
-        usuarios = await self.service.obter_sentimento_diario()
+        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
 
-        
+        for user in usuarios:
+            member = await ctx.guild.fetch_member(user.idDiscord)
+            #print(member)
+    
 
     @commands.command(pass_context=True, aliases=['f'])
     async def feliz(self, ctx):
-        pass#await self.add_humor(ctx, sentimento.feliz.value)
+        await self.add_humor(ctx, sentimento.feliz.value)
 
     @commands.command(pass_context=True, aliases=['n'] )
     async def neutro(self, ctx):
-        pass#await self.add_humor(ctx, sentimento.neutro.value)
+        await self.add_humor(ctx, sentimento.neutro.value)
 
     @commands.command(pass_context=True, aliases=['i'])
     async def irritado(self, ctx):
-        pass#await self.add_humor(ctx, sentimento.irritado.value)
+        await self.add_humor(ctx, sentimento.irritado.value)
 
     @commands.command(pass_context=True, aliases=['d'])
     async def daily(self, ctx):

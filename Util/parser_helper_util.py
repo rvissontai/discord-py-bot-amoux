@@ -1,4 +1,5 @@
 import argparse
+import base64
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
@@ -36,3 +37,9 @@ def string_para_args_parse(*args):
         index+=2
 
     return response
+
+def string_para_base64(texto):
+    sample_string_bytes = texto.encode("ascii")
+    base64_bytes = base64.b64encode(sample_string_bytes)
+    
+    return base64_bytes.decode("ascii")

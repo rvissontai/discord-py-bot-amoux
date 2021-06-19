@@ -1,15 +1,14 @@
+import time
 import discord 
-import requests
-import json
-import argparse
 import os
+import asyncio
+import aioschedule
 
-from discord.ext import commands
+from discord.ext.commands.core import guild_only
+from discord.ext import commands, tasks
+
 from database import iniciar_database
 from settings import *
-
-from Services.goobee_teams_service import goobe_teams_service
-from database import Usuarios
 
 from Cogs.barrel import *
 from Services.dm_service import dm_service
@@ -55,6 +54,10 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Hummm, não conheço esse comando, na dúvida manda um .help pra ver os comandos')
 
+@tasks.loop(seconds=10.0, count=5)
+async def slow_count(ctx):
+    print(ctx)
+
 @bot.command()
 async def ping(ctx):
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
@@ -70,5 +73,15 @@ def comando_interno_valido(message):
 #     'coin': get_times,
 #     'goobe':
 # }
+
+async def lembrar_usuarios_humor():
+    print('to aqui')
+    # canal = discord.utils.get(bot.get_all_channels(), name="Amoux")
+
+    # if(canal is not None):
+    #     await canal.send('E ai galera, como vocês estão se sentindo hoje?')
+    # else:
+    #     geral = discord.utils.get(bot.get_all_channels(), name="geral")
+    #     await geral.send('E ai galera, como vocês estão se sentindo hoje?')
 
 bot.run(os.getenv('DISCORD-TOKEN'))

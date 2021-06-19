@@ -1,10 +1,12 @@
-import discord
+import base64
+import json
+
 from Util.parser_helper_util import CustomArgumentParser, string_para_args_parse
 from Services.cadmus_coins_service import cadmus_coins_service
 from Services.goobee_teams_service import goobe_teams_service
 from Entities.usuarios_coins_model import UsuariosCoins
 from Entities.usuarios_model import Usuarios
-import json
+
 
 class dm_service():
     def __init__(self, bot):
@@ -40,26 +42,26 @@ class dm_service():
 
     async def goobe_teste_autenticacao(self, message, args):
         try:
-            #Utilizar um sistema...humm...alternatvo... sim, alternativo, para encontrar a info criptografada
-            await message.channel.send("1 de 3 - Encriptografando credencias, essa é a parte mais demorada, espera aí...")
+            await message.channel.send("Vou confirmar no goobeteams se a suas credencias estão corretas, isso pode demorar alguns segundos...")
+
             encripted = await self.goobe_service.encriptar_autenticacao(args.login, args.password)
 
-            await message.channel.send("2 de 3 - Autenticando no goobe...")
             response = await self.goobe_service.autenticar(encripted["login"], encripted["password"])
 
             if(response.status_code == 200):
                 try:
-                    user = Usuarios.get(Usuarios.idDiscord == message.author.id)
-                    await message.channel.send("3 de 3 - Atualizando usuário...")
+                    #Obter o usuário na base de dados, caso o usuário não exista, será gerada uma exceção;
+                    Usuarios.get(Usuarios.idDiscord == message.author.id)
+
                     Usuarios.update(login = encripted["login"], senha = encripted["password"]).where(Usuarios.idDiscord == message.author.id).returning(Usuarios)
                 except Usuarios.DoesNotExist:
-                    await message.channel.send("3 de 3 - Criando usuário...")
                     Usuarios.insert(idDiscord=message.author.id, login=encripted["login"], senha=encripted["password"]).execute()
                 
                 await message.channel.send('Beleza, consegui logar aqui, agora é só ir no chat geral e mudar seu humor.')
             else:
                 await message.channel.send('Não foi possível autenticar, tem certeza que me passou as informações certas?')
-        except:
+        except Exception as e:
+            print(e)
             await message.channel.send('Vixi ocorreu um problema interno, não vai rolar ):')
 
     async def coin_teste_autenticacao(self, message, args):

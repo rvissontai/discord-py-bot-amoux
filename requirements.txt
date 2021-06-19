@@ -10,8 +10,6 @@ idna==2.10
 multidict==4.7.6
 peewee==3.14.0
 pipreqs==0.4.10
-py-crypt==1.1.1
-pycryptodome==3.9.9
 pyDes==2.0.1
 python-dotenv==0.15.0
 requests==2.25.1
