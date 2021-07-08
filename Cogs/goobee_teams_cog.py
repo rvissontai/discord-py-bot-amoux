@@ -9,7 +9,21 @@ class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
+        #self.rotina.start()
         
+
+    @tasks.loop(seconds=100.0)
+    async def rotina(self):
+        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
+
+        nome_usuarios = []
+
+        for user in usuarios:
+            member = await self.bot.guild.fetch_member(user.idDiscord)
+            nome_usuarios.append(member.name)
+
+        #await self.service.enviar_notificacao_humor()
+
 
     @commands.command(pass_context=True, aliases=['ta'])
     async def testeaviso(self, ctx):
@@ -22,19 +36,23 @@ class goobee_teams(commands.Cog):
             #print(member)
     
 
-    @commands.command(pass_context=True, aliases=['f'])
+    @commands.command(pass_context=True, aliases=['f', 'F'])
     async def feliz(self, ctx):
         await self.add_humor(ctx, sentimento.feliz.value)
 
-    @commands.command(pass_context=True, aliases=['n'] )
-    async def neutro(self, ctx):
-        await self.add_humor(ctx, sentimento.neutro.value)
+    @commands.command(pass_context=True, aliases=['b', 'B'] )
+    async def bom(self, ctx):
+        await self.add_humor(ctx, sentimento.bom.value)
 
-    @commands.command(pass_context=True, aliases=['i'])
-    async def irritado(self, ctx):
-        await self.add_humor(ctx, sentimento.irritado.value)
+    @commands.command(pass_context=True, aliases=['n', 'N'])
+    async def nao_tao_bom(self, ctx):
+        await self.add_humor(ctx, sentimento.nao_tao_bom.value)
 
-    @commands.command(pass_context=True, aliases=['d'])
+    @commands.command(pass_context=True, aliases=['t', 'T'])
+    async def triste(self, ctx):
+        await self.add_humor(ctx, sentimento.triste.value)
+
+    @commands.command(pass_context=True, aliases=['d', 'D'])
     async def daily(self, ctx):
         #Enviar uma mensagem para informar o usuário que o humor está sendo modificado.
         mensagem = await ctx.send('Definindo daily...')
@@ -71,15 +89,15 @@ class goobee_teams(commands.Cog):
 
         #Definir a mensagem a ser exibida com base no response
         if(response == humor_response.sucesso):
-            await mensagem.edit(content = 'Seu humor foi alterado!')
+            await mensagem.edit(content = ctx.author.mention + ', seu humor foi alterado!')
             return
         
         if (response == humor_response.erro_alterar_humor):
-            await mensagem.edit(content = 'Cara alguma coisa errada não ta certa, não consegui alterar o humor ):')
+            await mensagem.edit(content = format(ctx.author.mention) + ', alguma coisa errada não ta certa, não consegui alterar o humor ):')
             return
         
         if (response == humor_response.erro_autenticacao):
-            await mensagem.edit(content = 'Cara deu alguma coisa errada com sua autenticação ):')
+            await mensagem.edit(content = format(ctx.author.mention) + ', cara deu alguma coisa errada com sua autenticação ):')
             return
 
         if (response == humor_response.erro_usuario_nao_existe):
@@ -121,6 +139,10 @@ class goobee_teams(commands.Cog):
         #     }
 
         #     return requests.post('https://apiteams.goobee.com.br/api/Time/Times', json=param, headers=header)
+
+    @commands.command(pass_context=True, aliases=['hh'])
+    async def hug(self, ctx):
+        await ctx.send("hugs {}".format(ctx.message.author.mention()))
 
 def setup(bot):
     bot.add_cog(goobee_teams(bot))

@@ -7,7 +7,7 @@ class vitreo_telnet(commands.Cog):
         self.bot = bot
         self.service = vitreo_telnet_service(self.bot)
 
-    @commands.command(pass_context=True, aliases=['limpar-cache', 'lc'])
+    @commands.command(pass_context=True, aliases=['limpar-cache', 'lc', 'LC'])
     async def limpar_cache(self, ctx):
         mensagem = await ctx.send('limpando...')
         sucesso = await self.service.limpar_cache()

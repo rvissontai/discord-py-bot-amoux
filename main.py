@@ -2,7 +2,7 @@ import time
 import discord 
 import os
 import asyncio
-import aioschedule
+#import aioschedule
 
 from discord.ext.commands.core import guild_only
 from discord.ext import commands, tasks
@@ -54,13 +54,23 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         await ctx.send('Hummm, não conheço esse comando, na dúvida manda um .help pra ver os comandos')
 
-@tasks.loop(seconds=10.0, count=5)
-async def slow_count(ctx):
-    print(ctx)
 
 @bot.command()
 async def ping(ctx):
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
+
+
+# class MyHelpCommand(commands.MinimalHelpCommand):
+#     async def send_pages(self):
+#         destination = self.get_destination()
+#         e = discord.Embed(color=discord.Color.blurple(), description='')
+
+#         for page in self.paginator.pages:
+#             e.description += page + "\n"
+
+#         await destination.send(embed=e)
+
+# bot.help_command = MyHelpCommand()
 
 def comando_interno_valido(message):
     pass

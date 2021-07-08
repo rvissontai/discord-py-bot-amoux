@@ -1,4 +1,4 @@
-from Util.parser_helper_util import string_para_base64
+from Util.parser_helper_util import string_para_base64, encontrar_canal_padrao
 import requests
 import json
 
@@ -29,7 +29,7 @@ class goobe_teams_service():
             user = Usuarios.get(Usuarios.idDiscord == idDiscord)
             response = await self.autenticar(user.login, user.senha)
             
-            if(response.status_code != 200):
+            if(response.status_code != 200 or response.ok is not True):
                 return humor_response.erro_autenticacao
             
             sucesso_response = json.loads(response.text)
@@ -55,7 +55,7 @@ class goobe_teams_service():
 
                 humorResponse = requests.put(self.url_editar_humor + sentimento_diario_response, json=param, headers=header)
 
-            if(humorResponse.status_code != 200):
+            if(humorResponse.status_code != 200 or humorResponse.ok is not True):
                 return humor_response.erro_alterar_humor
                 
             return humor_response.sucesso
@@ -64,6 +64,7 @@ class goobe_teams_service():
 
         except Exception as e:
             print(e)
+            return humor_response.erro_alterar_humor
 
     async def obter_sentimento_diario(self, token, id_pessoa):
         response = requests.get(
@@ -92,7 +93,7 @@ class goobe_teams_service():
 
                 header = { 'Authorization': 'Bearer ' + sucesso_response["token"] }
                 param = {
-                    'dia': datetime.now().isoformat(),
+                    'dia': datetime.datetime.now().isoformat(),
                     'idTime': sucesso_response["idsTimes"][0],
                     'idResponsavelRegistro': sucesso_response["idPessoa"],
                     'observacao':''
@@ -190,6 +191,15 @@ class goobe_teams_service():
 
     #     return result
         
+    async def enviar_notificacao_humor(self):
+        canal = encontrar_canal_padrao(self.bot)
+
+        if canal is None:
+            print("Nenhum canal padrão configurado")
+            return
+
+        
+
     async def obter_usuarios_que_nao_informaram_humor(self):
         try:
             notificar_usuarios = []
