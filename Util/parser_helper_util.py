@@ -1,4 +1,8 @@
+from discord.ext.commands.core import guild_only
+
+import discord 
 import argparse
+import base64
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
@@ -36,3 +40,24 @@ def string_para_args_parse(*args):
         index+=2
 
     return response
+
+def string_para_base64(texto):
+    sample_string_bytes = texto.encode("ascii")
+    base64_bytes = base64.b64encode(sample_string_bytes)
+    
+    return base64_bytes.decode("ascii")
+
+def encontrar_canal_padrao(bot):
+    canal = discord.utils.get(bot.get_all_channels(), name="amoux")
+
+    if(canal is not None):
+        return canal
+    else:
+        geral = discord.utils.get(bot.get_all_channels(), name="geral")
+
+        if geral is not None:
+            return geral
+        
+    return None
+
+        

@@ -5,3 +5,4 @@ class Usuarios(BaseModel):
     idDiscord = peewee.TextField(unique=True)
     login = peewee.TextField()
     senha = peewee.TextField()
+    #payload = peewee.TextField()
