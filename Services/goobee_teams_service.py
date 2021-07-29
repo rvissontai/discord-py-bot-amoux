@@ -46,6 +46,8 @@ class goobe_teams_service():
                 }
 
                 humorResponse = requests.post(self.url_humor, json=param, headers=header)
+
+                #HumorDiario
             else:
                 param = {
                     'idSentimentoPessoa': sentimento_diario_response,

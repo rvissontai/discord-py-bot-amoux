@@ -12,16 +12,19 @@ class goobee_teams(commands.Cog):
         #self.rotina.start()
         
 
-    @tasks.loop(seconds=100.0)
+    @tasks.loop(seconds=10.0)
     async def rotina(self):
         usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
 
         nome_usuarios = []
 
-        for user in usuarios:
-            member = await self.bot.guild.fetch_member(user.idDiscord)
-            nome_usuarios.append(member.name)
+        print(self.bot)
 
+        # for user in usuarios:
+        #     member = await self.bot.guild.fetch_member(user.idDiscord)
+        #     nome_usuarios.append(member.name)
+
+        # print(nome_usuarios)
         #await self.service.enviar_notificacao_humor()
 
 
