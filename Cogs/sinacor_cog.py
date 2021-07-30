@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from Services.sinacor_service import *
 from Util.parser_helper_util import CustomArgumentParser
+from Parses.sinacor_parser import sinacor_parser
 
 #TODO
 #Utilizar o proprio argparse para gerar o conteúdo de ajuda que será enviado pelo bot
@@ -12,6 +13,7 @@ class sinacor_cog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = sinacor_service(bot)
+        self.sinacor_parser = sinacor_parser()
         self.comandos_internos = {
             '-a': self.abrir,
             '-f': self.fechar,
@@ -21,21 +23,11 @@ class sinacor_cog(commands.Cog):
             '--status': self.verificar_status
         }
 
-    @commands.command(pass_context=True, aliases=['sinacor'])
-    async def status_sinacor(self, ctx):
-        parser = CustomArgumentParser(description='Sinacor')
-
-        parser.add_argument('-s', '--status', help='Verificar se o sinacor está aberto ou fechado', action='store_true')
-        parser.add_argument('-a', '--abrir', help='Abrir o sinacor', action='store_true')
-        parser.add_argument('-f', '--fechar', help='Fechar o sinacor', action='store_true')
+    @commands.command(pass_context=True)
+    async def sinacor(self, ctx):
+        parser = self.sinacor_parser.obter_parser()
 
         args = ctx.message.content.split(' ')[1:]
-
-        ajuda = [
-            '\t-s --status \t Verificar se o sinacor está aberto ou fechado.\n', 
-            '\t-a --abrir  \t Abrir o sinacor\n', 
-            '\t-f --fechar \t Fechar o sinacor'
-        ]
 
         mensagem = await ctx.send('Aguarde...')
 
@@ -43,7 +35,7 @@ class sinacor_cog(commands.Cog):
             
             await mensagem.edit(
                 content = 'Você precisa informar um dos argumentos abaixo.',
-                embed = discord.Embed(title="Ajuda", description=''.join(ajuda)))
+                embed = discord.Embed(title="Ajuda", description=''.join(self.sinacor_parser.obter_ajuda())))
             return
 
         parse_args_result = parser.parse_args(args)
