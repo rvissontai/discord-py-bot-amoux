@@ -55,6 +55,22 @@ class sinacor_cog(commands.Cog):
         await self.comandos_internos[args[0]](mensagem)
 
         
+    @commands.command(pass_context=True, aliases=['ss'])
+    async def ver_status_sinacor(self, ctx):
+        mensagem = await ctx.send('Aguarde...')
+        await self.verificar_status(mensagem)
+
+
+    @commands.command(pass_context=True, aliases=['sa'])
+    async def abrir_sinacor(self, ctx):
+        mensagem = await ctx.send('Aguarde...')
+        await self.abrir(mensagem)
+
+
+    @commands.command(pass_context=True, aliases=['sf'])
+    async def fechar_sinacor(self, ctx):
+        mensagem = await ctx.send('Aguarde...')
+        await self.fechar(mensagem)
 
     async def verificar_status(self, mensagem):
         try:
@@ -63,6 +79,7 @@ class sinacor_cog(commands.Cog):
         except Exception as e:
             await mensagem.edit(content = 'Erro ao verificar status.')
             print(e)
+
 
     async def abrir(self, mensagem):
         try:

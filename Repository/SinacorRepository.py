@@ -45,7 +45,7 @@ class sinacor_repository:
 
         cursor = conexao.cursor()
 
-        query = f"UPDATE CORRWIN.TCCPARAM SET TP_MOVIMENTO = '{status}' WHERE (rownum = 1)"
+        query = f"UPDATE CORRWIN.TCCPARAM SET TP_MOVIMENTO = '{status}', DT_ATUAL = trunc(systimestamp) WHERE (rownum = 1)"
 
         cursor.execute(query)
 
