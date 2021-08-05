@@ -4,27 +4,34 @@ from Services.goobee_teams_service import goobe_teams_service
 from Common.Enum.enum_sentimento import sentimento
 from Common.Enum.enum_humor_response import humor_response
 from Common.Enum.enum_daily_response import daily_response
+from discord.utils import get
 
 class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
-        #self.rotina.start()
+        self.aviso_informe_humor.start()
         
 
-    @tasks.loop(seconds=10.0)
-    async def rotina(self):
-        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
+    @tasks.loop(seconds=30.0)
+    async def aviso_informe_humor(self):
+        pass
+        # usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
 
-        nome_usuarios = []
+        # nome_usuarios = []
 
-        print(self.bot)
+        # if usuarios is None or len(usuarios) == 0:
+        #     return
 
         # for user in usuarios:
-        #     member = await self.bot.guild.fetch_member(user.idDiscord)
-        #     nome_usuarios.append(member.name)
+            # all = self.bot.get_all_members()
+            # for a in all:
+            #     print(a)
+            # member = get(self.bot.get_all_members(), id=user.idDiscord)
+            # print(member)
+            # nome_usuarios.append(member.name)
 
-        # print(nome_usuarios)
+        #print(nome_usuarios)
         #await self.service.enviar_notificacao_humor()
 
 
@@ -107,6 +114,11 @@ class goobee_teams(commands.Cog):
             await mensagem.edit(content = 'Você ainda não me informou suas credenciais, enviei uma mensagem privada pra você, é só seguir as instruções por lá.')
             await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? fica tranquilo que não sou X9. \n ex: -s goobe -l eu@email.com -p senha123')     
             return
+
+        if (response == humor_response.timeout):
+            await mensagem.edit(content = 'A API do goobe não está respondendo, timeout ):')
+            return
+
         
 
     @commands.command(pass_context=True)
