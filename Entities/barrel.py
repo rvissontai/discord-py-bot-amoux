@@ -4,3 +4,4 @@ from Entities.frases_model import Frases
 from Entities.usuarios_coins_model import UsuariosCoins
 from Entities.lasted_cleaning import LastestCleaning
 from Entities.humor_diario_model import HumorDiario
+from Entities.task_informe_humor import TaskInformeHumor

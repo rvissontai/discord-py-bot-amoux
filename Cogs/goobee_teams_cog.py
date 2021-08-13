@@ -1,42 +1,63 @@
 import discord
+import datetime
+
 from discord.ext import commands, tasks
 from Services.goobee_teams_service import goobe_teams_service
 from Common.Enum.enum_sentimento import sentimento
 from Common.Enum.enum_humor_response import humor_response
 from Common.Enum.enum_daily_response import daily_response
+from discord.utils import get
 
 class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
-        #self.rotina.start()
+        self.aviso_informe_humor.start()
         
 
-    @tasks.loop(seconds=10.0)
-    async def rotina(self):
+    @tasks.loop(seconds=30.0)
+    async def aviso_informe_humor(self):
+        if datetime.datetime.now().hour < 13:
+            return
+
+        executou_hoje = await self.service.task_informe_humor_executou_hoje()
+
+        if(executou_hoje):
+            return
+
+        membros = []
+        texto = ''
         usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
 
-        nome_usuarios = []
+        if usuarios is None or len(usuarios) == 0:
+            await self.service.task_informe_humor_adicionar()
+            return
 
-        print(self.bot)
+        for user in usuarios:
+            member = get(self.bot.get_all_members(), id=int(user.idDiscord))
+            membros.append(member)
+            texto = member.mention + ', '
 
-        # for user in usuarios:
-        #     member = await self.bot.guild.fetch_member(user.idDiscord)
-        #     nome_usuarios.append(member.name)
+        canal = await self.service.encontrar_canal('Alcateia')
 
-        # print(nome_usuarios)
-        #await self.service.enviar_notificacao_humor()
+        if canal is None:
+            return
+
+        if len(membros) > 1:
+            await canal.send(texto + " como vocês estão se sentindo hoje?")
+        else:
+            await canal.send(texto + " como está se sentindo hoje?")
+
+        await self.service.task_informe_humor_adicionar()
+
+
 
 
     @commands.command(pass_context=True, aliases=['ta'])
     async def testeaviso(self, ctx):
-        mensagem = await ctx.send('Obtendo usuários que ainda não informaram humor...')
+        canal = await self.service.encontrar_canal('Rafael Vissontai')
 
-        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
-
-        for user in usuarios:
-            member = await ctx.guild.fetch_member(user.idDiscord)
-            #print(member)
+        await canal.send("Mensagem enviada da task")
     
 
     @commands.command(pass_context=True, aliases=['f', 'F'])
@@ -107,6 +128,11 @@ class goobee_teams(commands.Cog):
             await mensagem.edit(content = 'Você ainda não me informou suas credenciais, enviei uma mensagem privada pra você, é só seguir as instruções por lá.')
             await ctx.author.send('Agora é só me falar seu email e senha em uma única mensagem beleza? fica tranquilo que não sou X9. \n ex: -s goobe -l eu@email.com -p senha123')     
             return
+
+        if (response == humor_response.timeout):
+            await mensagem.edit(content = 'A API do goobe não está respondendo, timeout ):')
+            return
+
         
 
     @commands.command(pass_context=True)

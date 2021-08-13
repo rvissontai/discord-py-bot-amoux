@@ -1,17 +1,18 @@
 from Util.parser_helper_util import string_para_base64, encontrar_canal_padrao
 import requests
 import json
+import os
+import datetime
 
 from database import Usuarios
 from database import HumorDiario
 
-import datetime
-
-import os
-
 from Common.Enum.enum_humor_response import humor_response
 from Common.Enum.enum_daily_response import daily_response
 from Services.request.informar_humor_request import informar_humor_request
+
+from Repository.HumorDiarioRepository import humor_diario_repository
+from Repository.TaskInformeHumorRepository import task_informe_humor_repository
 
 class goobe_teams_service():
     def __init__(self, bot):
@@ -20,9 +21,11 @@ class goobe_teams_service():
         self.url_humor = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-HUMOR')
         self.url_editar_humor = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-EDITAR-HUMOR')
         self.url_daily = os.getenv('GOOBEE-URL') + os.getenv('GOOBEE-ENDPOINT-DAILY')
+        self.humor_diario_repository = humor_diario_repository()
+        self.task_informe_humor_repository = task_informe_humor_repository()
 
     async def autenticar(self, user, senha):
-        return requests.post(self.url_auth, data=None, json={'usuario': user, 'senha': senha })
+        return requests.post(self.url_auth, data=None, json={'usuario': user, 'senha': senha }, timeout=10)
 
     async def add_humor(self, idDiscord, id_sentimento):
         try:
@@ -46,8 +49,6 @@ class goobe_teams_service():
                 }
 
                 humorResponse = requests.post(self.url_humor, json=param, headers=header)
-
-                #HumorDiario
             else:
                 param = {
                     'idSentimentoPessoa': sentimento_diario_response,
@@ -60,9 +61,14 @@ class goobe_teams_service():
             if(humorResponse.status_code != 200 or humorResponse.ok is not True):
                 return humor_response.erro_alterar_humor
                 
+            self.humor_diario_repository.adicionar(idDiscord=idDiscord)
+
             return humor_response.sucesso
         except Usuarios.DoesNotExist:
             return humor_response.erro_usuario_nao_existe
+
+        except requests.exceptions.Timeout:
+            return humor_response.timeout
 
         except Exception as e:
             print(e)
@@ -193,12 +199,14 @@ class goobe_teams_service():
 
     #     return result
         
-    async def enviar_notificacao_humor(self):
-        canal = encontrar_canal_padrao(self.bot)
+    async def encontrar_canal(self, guild_nome):
+        canal = encontrar_canal_padrao(self.bot, guild_nome)
 
         if canal is None:
             print("Nenhum canal padrão configurado")
             return
+
+        return canal
 
         
 
@@ -208,20 +216,24 @@ class goobe_teams_service():
             users = Usuarios.select().execute()
 
             for user in users:
-                try:
-                    HumorDiario.get(
-                        HumorDiario.idDiscord == user.idDiscord and 
-                        HumorDiario.data == datetime.date.today()
-                    )
-                    
-                except HumorDiario.DoesNotExist:
-                    notificar_usuarios.append(user)
+                humor = self.humor_diario_repository.obter(user.idDiscord, datetime.date.today())
 
-                except Exception as e:
-                    print(e)
+                if humor is None:
+                    notificar_usuarios.append(user)
 
             return notificar_usuarios
 
         except Exception as e:
             print(e)        
             return None
+
+    async def task_informe_humor_adicionar(self):
+        self.task_informe_humor_repository.adicionar()
+
+    async def task_informe_humor_executou_hoje(self):
+        model = self.task_informe_humor_repository.obter()
+
+        if model is None:
+            return False
+
+        return True
