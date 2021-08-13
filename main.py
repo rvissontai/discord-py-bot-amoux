@@ -87,14 +87,4 @@ def comando_interno_valido(message):
 #     'goobe':
 # }
 
-async def lembrar_usuarios_humor():
-    print('to aqui')
-    # canal = discord.utils.get(bot.get_all_channels(), name="Amoux")
-
-    # if(canal is not None):
-    #     await canal.send('E ai galera, como vocês estão se sentindo hoje?')
-    # else:
-    #     geral = discord.utils.get(bot.get_all_channels(), name="geral")
-    #     await geral.send('E ai galera, como vocês estão se sentindo hoje?')
-
 bot.run(os.getenv('DISCORD-TOKEN'))
