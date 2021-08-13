@@ -15,7 +15,7 @@ class goobee_teams(commands.Cog):
         self.aviso_informe_humor.start()
         
 
-    @tasks.loop(seconds=30.0)
+    @tasks.loop(seconds=300.0)
     async def aviso_informe_humor(self):
         if datetime.datetime.now().hour < 13:
             return
