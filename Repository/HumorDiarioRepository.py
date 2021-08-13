@@ -6,13 +6,21 @@ class humor_diario_repository:
 
     def adicionar(self, idDiscord):
         hoje = datetime.date.today()
-        humor = self.obter(idDiscord, hoje)
+        humor = self.obter_por_id(idDiscord)
 
         if humor is not None:
-            HumorDiario.update(data = hoje).where(HumorDiario.idDiscord == idDiscord, HumorDiario.data == hoje).returning(HumorDiario)
+            humor.data = hoje
+            humor.save()
+        else:
+            HumorDiario.insert(idDiscord=idDiscord, data=hoje).execute()
 
-        HumorDiario.insert(idDiscord=idDiscord, data=hoje).execute()
 
+    def obter_por_id(self, idDiscord):
+        try:
+            return HumorDiario.get(HumorDiario.idDiscord == idDiscord)
+            
+        except HumorDiario.DoesNotExist:
+            return None
 
     def obter(self, idDiscord, data):
         try:

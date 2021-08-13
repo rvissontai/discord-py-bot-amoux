@@ -1,4 +1,6 @@
 import discord
+import datetime
+
 from discord.ext import commands, tasks
 from Services.goobee_teams_service import goobe_teams_service
 from Common.Enum.enum_sentimento import sentimento
@@ -15,35 +17,47 @@ class goobee_teams(commands.Cog):
 
     @tasks.loop(seconds=30.0)
     async def aviso_informe_humor(self):
-        pass
-        # usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
+        if datetime.datetime.now().hour < 13:
+            return
 
-        # nome_usuarios = []
+        executou_hoje = await self.service.task_informe_humor_executou_hoje()
 
-        # if usuarios is None or len(usuarios) == 0:
-        #     return
+        if(executou_hoje):
+            return
 
-        # for user in usuarios:
-            # all = self.bot.get_all_members()
-            # for a in all:
-            #     print(a)
-            # member = get(self.bot.get_all_members(), id=user.idDiscord)
-            # print(member)
-            # nome_usuarios.append(member.name)
+        membros = []
+        texto = ''
+        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
 
-        #print(nome_usuarios)
-        #await self.service.enviar_notificacao_humor()
+        if usuarios is None or len(usuarios) == 0:
+            await self.service.task_informe_humor_adicionar()
+            return
+
+        for user in usuarios:
+            member = get(self.bot.get_all_members(), id=int(user.idDiscord))
+            membros.append(member)
+            texto = member.mention + ', '
+
+        canal = await self.service.encontrar_canal('Alcateia')
+
+        if canal is None:
+            return
+
+        if len(membros) > 1:
+            await canal.send(texto + " como vocês estão se sentindo hoje?")
+        else:
+            await canal.send(texto + " como está se sentindo hoje?")
+
+        await self.service.task_informe_humor_adicionar()
+
+
 
 
     @commands.command(pass_context=True, aliases=['ta'])
     async def testeaviso(self, ctx):
-        mensagem = await ctx.send('Obtendo usuários que ainda não informaram humor...')
+        canal = await self.service.encontrar_canal('Rafael Vissontai')
 
-        usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
-
-        for user in usuarios:
-            member = await ctx.guild.fetch_member(user.idDiscord)
-            #print(member)
+        await canal.send("Mensagem enviada da task")
     
 
     @commands.command(pass_context=True, aliases=['f', 'F'])

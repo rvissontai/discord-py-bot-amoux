@@ -13,7 +13,7 @@ from settings import *
 from Cogs.barrel import *
 from Services.dm_service import dm_service
 
-bot = commands.Bot(command_prefix = ["?", "."])
+bot = commands.Bot(command_prefix = ["?", "."], intents=discord.Intents().all())
 
 iniciar_database()
 
@@ -23,6 +23,7 @@ async def on_ready():
     bot.load_extension("Cogs.vitreo_telnet_cog")
     bot.load_extension("Cogs.cadmus_coins_cog")
     bot.load_extension("Cogs.sinacor_cog")
+    bot.load_extension("Cogs.central_risco_cog")
 
     print('Bot está pronto')
 
@@ -58,6 +59,7 @@ async def on_command_error(ctx, error):
 
 @bot.command()
 async def ping(ctx):
+    teste = ctx.guild.members
     await ctx.send('Pong! {0}ms'.format(round(bot.latency * 1000, 0)))
 
 

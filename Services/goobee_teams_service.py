@@ -12,6 +12,7 @@ from Common.Enum.enum_daily_response import daily_response
 from Services.request.informar_humor_request import informar_humor_request
 
 from Repository.HumorDiarioRepository import humor_diario_repository
+from Repository.TaskInformeHumorRepository import task_informe_humor_repository
 
 class goobe_teams_service():
     def __init__(self, bot):
@@ -21,6 +22,7 @@ class goobe_teams_service():
         self.url_editar_humor = os.getenv('GOOBEE-URL') + os.getenv('GOOBE-ENDPOINT-EDITAR-HUMOR')
         self.url_daily = os.getenv('GOOBEE-URL') + os.getenv('GOOBEE-ENDPOINT-DAILY')
         self.humor_diario_repository = humor_diario_repository()
+        self.task_informe_humor_repository = task_informe_humor_repository()
 
     async def autenticar(self, user, senha):
         return requests.post(self.url_auth, data=None, json={'usuario': user, 'senha': senha }, timeout=10)
@@ -59,7 +61,7 @@ class goobe_teams_service():
             if(humorResponse.status_code != 200 or humorResponse.ok is not True):
                 return humor_response.erro_alterar_humor
                 
-            #self.humor_diario_repository.adicionar(idDiscord=idDiscord)
+            self.humor_diario_repository.adicionar(idDiscord=idDiscord)
 
             return humor_response.sucesso
         except Usuarios.DoesNotExist:
@@ -197,29 +199,41 @@ class goobe_teams_service():
 
     #     return result
         
-    async def enviar_notificacao_humor(self):
-        canal = encontrar_canal_padrao(self.bot)
+    async def encontrar_canal(self, guild_nome):
+        canal = encontrar_canal_padrao(self.bot, guild_nome)
 
         if canal is None:
             print("Nenhum canal padrão configurado")
             return
 
+        return canal
+
         
 
     async def obter_usuarios_que_nao_informaram_humor(self):
-        pass
-        # try:
-        #     notificar_usuarios = []
-        #     users = Usuarios.select().execute()
+        try:
+            notificar_usuarios = []
+            users = Usuarios.select().execute()
 
-        #     for user in users:
-        #         humor = self.humor_diario_repository.obter(user.idDiscord, datetime.date.today())
+            for user in users:
+                humor = self.humor_diario_repository.obter(user.idDiscord, datetime.date.today())
 
-        #         if humor is None:
-        #             notificar_usuarios.append(user)
+                if humor is None:
+                    notificar_usuarios.append(user)
 
-        #     return notificar_usuarios
+            return notificar_usuarios
 
-        # except Exception as e:
-        #     print(e)        
-        #     return None
+        except Exception as e:
+            print(e)        
+            return None
+
+    async def task_informe_humor_adicionar(self):
+        self.task_informe_humor_repository.adicionar()
+
+    async def task_informe_humor_executou_hoje(self):
+        model = self.task_informe_humor_repository.obter()
+
+        if model is None:
+            return False
+
+        return True
