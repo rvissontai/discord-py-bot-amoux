@@ -12,6 +12,7 @@ from settings import *
 
 from Cogs.barrel import *
 from Services.dm_service import dm_service
+import json
 
 bot = commands.Bot(command_prefix = ["?", "."], intents=discord.Intents().all())
 
@@ -28,7 +29,24 @@ async def on_ready():
     print('Bot está pronto')
 
     await bot.change_presence(activity=discord.Game(name="jogo da vida"))
+
+    # Opening JSON file
+    # f = open('response.json', encoding="utf8")
+    # fnovo = open("inserts.txt", "w")
+
+    # data = json.load(f)
     
+    # inserts = []
+
+    # for i in data:
+    #     fnovo.write(f"INSERT INTO api_sisfinance_simulator.tb_participacao_ativo (exchange_code, ativo, ativo_legado, percentual, tipo_mercado, mercado, ds_investimento, dt_inclusao) VALUES(120948, '{i['ativo']}', '{i['ativoLegado']}', {i['percentual']}, '{i['tipoMercado']}', '{i['mercado']}', '{i['ds_Investimento']}', now()); \n")
+    
+    # # Closing file
+    # f.close()
+    # fnovo.close()
+
+
+
 @bot.event
 async def on_message(message):
     print(str(message.author) + ' enviou uma mensagem')
@@ -88,3 +106,5 @@ def comando_interno_valido(message):
 # }
 
 bot.run(os.getenv('DISCORD-TOKEN'))
+
+

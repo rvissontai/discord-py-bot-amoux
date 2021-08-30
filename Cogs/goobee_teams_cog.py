@@ -17,7 +17,7 @@ class goobee_teams(commands.Cog):
 
     @tasks.loop(seconds=300.0)
     async def aviso_informe_humor(self):
-        if datetime.datetime.now().hour < 13:
+        if datetime.datetime.now().hour < 14:
             return
 
         executou_hoje = await self.service.task_informe_humor_executou_hoje()
@@ -36,7 +36,7 @@ class goobee_teams(commands.Cog):
         for user in usuarios:
             member = get(self.bot.get_all_members(), id=int(user.idDiscord))
             membros.append(member)
-            texto = member.mention + ', '
+            texto += member.mention + ', '
 
         canal = await self.service.encontrar_canal('Alcateia')
 
