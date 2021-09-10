@@ -130,7 +130,7 @@ class goobee_teams(commands.Cog):
             return
 
         if (response == humor_response.timeout):
-            await mensagem.edit(content = 'A API do goobe não está respondendo, timeout ):')
+            await mensagem.edit(content = ctx.author.mention + ', a API do goobe não está respondendo, timeout ):')
             return
 
         
