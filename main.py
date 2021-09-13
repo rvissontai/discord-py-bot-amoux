@@ -4,6 +4,7 @@ import os
 import asyncio
 #import aioschedule
 
+from discord_slash import SlashCommand, SlashContext
 from discord.ext.commands.core import guild_only
 from discord.ext import commands, tasks
 
@@ -15,6 +16,7 @@ from Services.dm_service import dm_service
 import json
 
 bot = commands.Bot(command_prefix = ["?", "."], intents=discord.Intents().all())
+slash = SlashCommand(bot)
 
 iniciar_database()
 
@@ -45,7 +47,9 @@ async def on_ready():
     # f.close()
     # fnovo.close()
 
-
+@slash.slash(name="hello", description="Aquele hello world básico", guild_ids=[885873668457103430])
+async def _hello(ctx: SlashContext):
+    await ctx.send("Hello World")
 
 @bot.event
 async def on_message(message):
