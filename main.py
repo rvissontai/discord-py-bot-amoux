@@ -25,6 +25,7 @@ async def on_ready():
     bot.load_extension("Cogs.cadmus_coins_cog")
     bot.load_extension("Cogs.sinacor_cog")
     bot.load_extension("Cogs.central_risco_cog")
+    #bot.load_extension("Cogs.voice_cog")
 
     print('Bot está pronto')
 

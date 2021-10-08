@@ -6,6 +6,7 @@ class central_risco_parser():
         self.central_risco_parser = CustomArgumentParser(description='Central Risco')
         
         self.central_risco_parser.add_argument('-a', '--aprovar_ordem', help='Aprovar uma ordem na central de risco e mudar status para EXECUTED', required=True)
+        self.central_risco_parser.add_argument('-f', '--fila', help='Definir a fila de envio', required=False)
 
 
     def obter_parser(self):

@@ -12,7 +12,7 @@ class central_risco_cog(commands.Cog):
         self.parser = central_risco_parser()
         self.comandos_internos = {
             '-a': self.aprovar_ordem,
-            '--aprovar_ordem': self.aprovar_ordem,
+            '--aprovar_ordem': self.aprovar_ordem
         }
         
 
