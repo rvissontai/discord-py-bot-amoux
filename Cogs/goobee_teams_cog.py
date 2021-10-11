@@ -12,7 +12,7 @@ class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
-        self.aviso_informe_humor.start()
+        #self.aviso_informe_humor.start()
         
 
     @tasks.loop(seconds=300.0)
