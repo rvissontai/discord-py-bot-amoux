@@ -50,13 +50,6 @@ class goobee_teams(commands.Cog):
             await canal.send(texto + " como está se sentindo hoje?")
 
         await self.service.task_informe_humor_adicionar()
-
-
-    @commands.command(pass_context=True, aliases=['ta'])
-    async def testeaviso(self, ctx):
-        canal = await self.service.encontrar_canal('Rafael Vissontai')
-
-        await canal.send("Mensagem enviada da task")
     
 
     @commands.command(pass_context=True, aliases=['f', 'F'])
@@ -102,7 +95,6 @@ class goobee_teams(commands.Cog):
             return
 
 
-
     async def add_humor(self, ctx, id_sentimento):
         #Enviar uma mensagem para informar o usuário que o humor está sendo modificado.
         mensagem = await ctx.send('Definindo humor...')
@@ -132,45 +124,6 @@ class goobee_teams(commands.Cog):
             await mensagem.edit(content = ctx.author.mention + ', a API do goobe não está respondendo, timeout ):')
             return
 
-        
-
-    @commands.command(pass_context=True)
-    async def times(self, ctx):
-        print('time')
-        # comando = params['c']
-        # response = await comandos_internos[comando](ctx)
-
-        # if(response.status_code == 200):
-        #     await ctx.send(response.text)
-        # else:
-        #     await ctx.send('Erro listar times')
-
-    async def comando_times(self, message):
-        args = message.split()
-        print('executanto comando times')
-
-    async def get_times(self, ctx):
-        pass
-        # user = Usuarios.get(Usuarios.idDiscord == ctx.author.id)
-        # response = autenticar(user.login, user.senha)
-
-        # if(response.status_code == 200):
-        #     sucesso_response = json.loads(response.text)
-
-        #     header = { 'Authorization': 'Bearer ' + sucesso_response["token"] }
-        #     param = {
-        #         'ativo': True,
-        #         'idCliente': "",
-        #         'idGrupo': "",
-        #         'idProjeto': "",
-        #         'temperatura': ""
-        #     }
-
-        #     return requests.post('https://apiteams.goobee.com.br/api/Time/Times', json=param, headers=header)
-
-    @commands.command(pass_context=True, aliases=['hh'])
-    async def hug(self, ctx):
-        await ctx.send("hugs {}".format(ctx.message.author.mention()))
 
 def setup(bot):
     bot.add_cog(goobee_teams(bot))
