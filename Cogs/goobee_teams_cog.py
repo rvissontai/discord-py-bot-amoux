@@ -1,4 +1,3 @@
-import discord
 import datetime
 
 from discord.ext import commands, tasks
@@ -12,7 +11,7 @@ class goobee_teams(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.service = goobe_teams_service(self.bot)
-        #self.aviso_informe_humor.start()
+        self.aviso_informe_humor.start()
         
 
     @tasks.loop(seconds=300.0)
@@ -35,8 +34,10 @@ class goobee_teams(commands.Cog):
 
         for user in usuarios:
             member = get(self.bot.get_all_members(), id=int(user.idDiscord))
-            membros.append(member)
-            texto += member.mention + ', '
+
+            if member.desktop_status.value != 'offline' or member.mobile_status.value != 'offline':
+                membros.append(member)
+                texto += member.mention + ', '
 
         canal = await self.service.encontrar_canal('Alcateia')
 
@@ -49,8 +50,6 @@ class goobee_teams(commands.Cog):
             await canal.send(texto + " como está se sentindo hoje?")
 
         await self.service.task_informe_humor_adicionar()
-
-
 
 
     @commands.command(pass_context=True, aliases=['ta'])

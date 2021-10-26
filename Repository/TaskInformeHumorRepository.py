@@ -6,7 +6,7 @@ class task_informe_humor_repository:
 
     def adicionar(self):
         hoje = datetime.date.today()
-        task = self.obter_por_data(hoje)
+        task = self.obter()
 
         if task is not None:
             task.data = hoje
@@ -22,9 +22,15 @@ class task_informe_humor_repository:
         except TaskInformeHumor.DoesNotExist:
             return None
 
-    def obter(self):
+    def obter_hoje(self):
         try:
             return TaskInformeHumor.get(TaskInformeHumor.data == datetime.date.today())
             
+        except TaskInformeHumor.DoesNotExist:
+            return None
+
+    def obter(self):
+        try:
+            return TaskInformeHumor.get()
         except TaskInformeHumor.DoesNotExist:
             return None

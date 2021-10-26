@@ -231,7 +231,7 @@ class goobe_teams_service():
         self.task_informe_humor_repository.adicionar()
 
     async def task_informe_humor_executou_hoje(self):
-        model = self.task_informe_humor_repository.obter()
+        model = self.task_informe_humor_repository.obter_hoje()
 
         if model is None:
             return False
