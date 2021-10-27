@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from peewee import Alias
 import pyttsx3
 
 from Services.lerolero_service import lerolero_service
@@ -20,7 +21,8 @@ class lerolero_cog(commands.Cog):
         await ctx.send(frase_aleatoria)
 
 
-    async def enviar_audio(self, ctx, frase_aleatoria):
+    @commands.command(pass_context=True, aliases=['td'])
+    async def enviar_audio(self, ctx):
         canal = ctx.message.author.voice.channel
 
         if not canal:
@@ -31,20 +33,11 @@ class lerolero_cog(commands.Cog):
         await channel.connect()
 
         try:
-            engine = pyttsx3.init()
-            engine.setProperty('rate',180)
-            engine.save_to_file(frase_aleatoria, 'speech.mp3')
-            engine.runAndWait()
-
-            audio_source = discord.FFmpegPCMAudio('speech.mp3')
-
-            await ctx.voice_client.play(audio_source, after=lambda e: print('Player error: %s' % e) if e else None)
+            audio_source = discord.FFmpegPCMAudio('dilma-meta.mp3')
+            await ctx.voice_client.play(audio_source, after=lambda e: print('Player error: %s' % e) if e else '???')
             
         except Exception as e:
             print(e)
-
-        await ctx.send(frase_aleatoria)
-        await ctx.voice_client.disconnect()
 
 def setup(bot):
     bot.add_cog(lerolero_cog(bot))
