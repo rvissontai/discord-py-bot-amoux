@@ -18,10 +18,11 @@ iniciar_database()
 async def on_ready():
     bot.load_extension("Cogs.goobee_teams_cog")
     bot.load_extension("Cogs.vitreo_telnet_cog")
-    bot.load_extension("Cogs.cadmus_coins_cog")
+    #bot.load_extension("Cogs.cadmus_coins_cog")
     bot.load_extension("Cogs.sinacor_cog")
     bot.load_extension("Cogs.central_risco_cog")
     bot.load_extension("Cogs.lerolero_cog")
+    bot.load_extension("Cogs.ninegag_cog")
 
     print('Bot está pronto')
 

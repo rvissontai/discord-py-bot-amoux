@@ -24,6 +24,13 @@ class goobee_teams(commands.Cog):
         if(executou_hoje):
             return
 
+        dia_da_semana = datetime.datetime.today().weekday()
+        sexta_feira = 4
+
+        if dia_da_semana > sexta_feira:
+            await self.service.task_informe_humor_adicionar()
+            return
+            
         membros = []
         texto = ''
         usuarios = await self.service.obter_usuarios_que_nao_informaram_humor()
@@ -46,7 +53,7 @@ class goobee_teams(commands.Cog):
 
         if len(membros) > 1:
             await canal.send(texto + " como vocês estão se sentindo hoje?")
-        else:
+        elif len(membros) == 1:
             await canal.send(texto + " como está se sentindo hoje?")
 
         await self.service.task_informe_humor_adicionar()
