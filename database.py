@@ -1,4 +1,3 @@
-import sqlite3
 import peewee
 from Entities.barrel import *
 
@@ -11,12 +10,6 @@ def iniciar_database():
         Configuracao.create_table()
 
         Frases.create_table()
-
-        LastestCleaning.create_table()
-
-        HumorDiario.create_table()
-
-        TaskInformeHumor.create_table()
 
         print("Banco de dados está pronto.")
     except peewee.OperationalError:

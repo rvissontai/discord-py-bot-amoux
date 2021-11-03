@@ -1,6 +1,4 @@
 from telnetlib import Telnet
-from datetime import datetime
-from database import LastestCleaning
 
 import os
 class vitreo_telnet_service():
@@ -15,8 +13,6 @@ class vitreo_telnet_service():
             with Telnet(self.host, self.port, self.timeout) as session:
                 session.write(b"flush_all\n")
                 session.write(b"quit\n")
-
-            #LastestCleaning.insert(data=datetime.now()).execute()
 
             return True
         except Exception as e:

@@ -1,9 +1,6 @@
 import random
-import pyttsx3
 
 from os import urandom
-import requests
-import json
 
 class lerolero_service():
     def __init__(self):

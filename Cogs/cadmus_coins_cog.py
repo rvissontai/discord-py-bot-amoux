@@ -1,14 +1,9 @@
-import discord
-import argparse
-import shlex
-import os
 import requests
 
 from discord.ext import commands
 from Services.cadmus_coins_service import cadmus_coins_service
 from Util.parser_helper_util import CustomArgumentParser, string_para_args_parse
 from database import UsuariosCoins
-from Services.goobee_teams_service import goobe_teams_service
 
 class cadmus_coins(commands.Cog):
     def __init__(self, bot):
